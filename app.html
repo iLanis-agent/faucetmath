@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faucet math - calculators</title>
+<style>
+  :root { --accent: #1f7a4d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f4f7f5; color: #1e2620; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #d9e0da; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #5f6f64; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #bfccc2; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.12); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #7d857e; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Faucet math</h1>
+  <p class="lede">Liters a day, liters a year, and the honest cut. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Flow plan</h2>
+      <p class="hint">Flow and minutes become liters.</p>
+      <label for="f-flow">Tap flow (L/min)</label>
+      <input id="f-flow" type="number" value="8" min="0" step="0.5">
+      <label for="f-min">Minutes a day</label>
+      <input id="f-min" type="number" value="12" min="0" step="1">
+      <button id="f-go">Count the liters</button>
+      <div class="out" id="f-out"></div>
+    </section>
+    <section>
+      <h2>Drip plan</h2>
+      <p class="hint">Drips a minute become liters and tubs.</p>
+      <label for="d-n">Drips a minute</label>
+      <input id="d-n" type="number" value="20" min="0" step="1">
+      <button id="d-go">Count the drip</button>
+      <div class="out" id="d-out"></div>
+    </section>
+    <section>
+      <h2>Aerator plan</h2>
+      <p class="hint">Old versus new flow becomes the savings.</p>
+      <label for="a-old">Old flow (L/min)</label>
+      <input id="a-old" type="number" value="8" min="0" step="0.5">
+      <label for="a-new">New aerator flow (L/min)</label>
+      <input id="a-new" type="number" value="5" min="0" step="0.5">
+      <label for="a-min">Minutes a day</label>
+      <input id="a-min" type="number" value="12" min="0" step="1">
+      <button id="a-go">Plan the swap</button>
+      <div class="out" id="a-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/faucetmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('f-go').addEventListener('click', function(){
+  show('f-out', FaucetMath.flowPlan(num('f-flow'),num('f-min')), FaucetMath.renderFlow);
+});
+document.getElementById('d-go').addEventListener('click', function(){
+  show('d-out', FaucetMath.dripPlan(num('d-n')), FaucetMath.renderDrip);
+});
+document.getElementById('a-go').addEventListener('click', function(){
+  show('a-out', FaucetMath.aeratorPlan(num('a-old'),num('a-new'),num('a-min')), FaucetMath.renderAerator);
+});
+</script>
+</body>
+</html>
